@@ -2,13 +2,9 @@ from django.shortcuts import render
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
-from .serializers import UserRegistrationSerializer, CustomTokenObtainPairSerializer
-from .models import UserProfile
-
-
+from .serializers import UserRegistrationSerializer, CustomTokenObtainPairSerializer, KeyValueSerializer
+from .models import UserProfile, KeyValue
 from django.contrib.auth.models import User
-
 from django.contrib.auth.password_validation import (
     MinimumLengthValidator,
     CommonPasswordValidator,
@@ -16,19 +12,10 @@ from django.contrib.auth.password_validation import (
     UserAttributeSimilarityValidator,
 )
 from django.core.exceptions import ValidationError
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status, serializers
-
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from rest_framework.response import Response
-from rest_framework import status
-
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
-from .serializers import CustomTokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import viewsets, status
+from rest_framework.permissions import IsAuthenticated
 
 
 class UserRegistrationView(APIView):
@@ -129,11 +116,6 @@ class UserRegistrationView(APIView):
             return Response(error_response, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework.response import Response
-from rest_framework import status
-from .serializers import CustomTokenObtainPairSerializer
-
 
 #Not handled INTERNAL_SERVER_ERROR(pending dev)
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -170,13 +152,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
-from .models import KeyValue
-from .serializers import KeyValueSerializer
 
 class KeyValueViewSet(viewsets.ModelViewSet):
     queryset = KeyValue.objects.all()
@@ -234,63 +209,7 @@ class KeyValueViewSet(viewsets.ModelViewSet):
             "message": "Data deleted successfully."
         }
         return Response(response_data, status=status.HTTP_204_NO_CONTENT)
-    
 
-
-    # @action(detail=True, methods=['get'], url_path='get_value')
-    # def get_value(self, request, pk=None):
-    #     instance = self.get_object()
-    #     response_data = {
-    #         "status": "success",
-    #         "data": {
-    #             "key": instance.key,
-    #             "value": instance.value
-    #         }
-    #     }
-    #     return Response(response_data, status=status.HTTP_200_OK)
-
-
-
-
-# from rest_framework import viewsets, status
-# from rest_framework.response import Response
-# from .models import KeyValue
-# from .serializers import KeyValueSerializer
-# from rest_framework.permissions import IsAuthenticated
-# from rest_framework.decorators import action
-
-# class KeyValueViewSet(viewsets.ModelViewSet):
-#     queryset = KeyValue.objects.all()
-#     serializer_class = KeyValueSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def perform_create(self, serializer):
-#         serializer.save()
-
-#     def create(self, request, *args, **kwargs):
-#         serializer = self.get_serializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         self.perform_create(serializer)
-
-#         response_data = {
-#             "status": "success",
-#             "message": "Data stored successfully."
-#         }
-#         return Response(response_data, status=status.HTTP_201_CREATED)
-
-
-#     @action(detail=True, methods=['get'])
-#     def get_value(self, request, pk=None):
-#         print('we are in get valuesssssssssssss')
-#         instance = self.get_object()
-#         response_data = {
-#             "status": "success",
-#             "data": {
-#                 "key": instance.key,
-#                 "value": instance.value
-#             }
-#         }
-#         return Response(response_data, status=status.HTTP_200_OK)
 
 
 

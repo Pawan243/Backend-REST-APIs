@@ -18,5 +18,4 @@ urlpatterns = [
     path('register/', UserRegistrationView.as_view(), name='user-register'),
     path('token/', CustomTokenObtainPairView.as_view(), name='custom_token_obtain_pair'),
     path('data/',include(router.urls))
-    # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

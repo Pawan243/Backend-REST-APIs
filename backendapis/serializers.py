@@ -3,15 +3,14 @@ from django.contrib.auth.models import User
 from .models import UserProfile, KeyValue
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate
+
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     age = serializers.IntegerField(write_only=True)
     gender = serializers.ChoiceField(choices=UserProfile.GENDER_CHOICES, write_only=True)
-
     class Meta:
         model = User
         fields = ('username', 'email', 'password', 'first_name', 'last_name', 'age', 'gender')
@@ -77,62 +76,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         except user_model.DoesNotExist:
             return None
         
-
-
-# serializers.py
-from rest_framework import serializers
-from .models import KeyValue
-
 class KeyValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = KeyValue
         fields = ('key', 'value')
-
-
-
-
-
-
-
-
-
-
-# from rest_framework import serializers
-# from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-# from rest_framework_simplejwt.exceptions import AuthenticationFailed
-# from django.contrib.auth import get_user_model
-
-# class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-#     username = serializers.CharField()
-#     password = serializers.CharField(write_only=True)
-
-#     def validate(self, attrs):
-#         username = attrs.get("username")
-#         password = attrs.get("password")
-
-#         if not username or not password:
-#             raise AuthenticationFailed("MISSING_FIELDS")
-
-#         user = self.user_exists(username)
-#         if user is None or not user.check_password(password):
-#             raise AuthenticationFailed("INVALID_CREDENTIALS")
-
-#         refresh = self.get_token(user)
-#         data = {
-#             "access_token": str(refresh.access_token),
-#             "expires_in": 3600,
-#         }
-
-#         return data
-
-#     def user_exists(self, username):
-#         user_model = get_user_model()
-#         try:
-#             user = user_model.objects.get(username=username)
-#             return user
-#         except user_model.DoesNotExist:
-#             return None
-
 
 
 
