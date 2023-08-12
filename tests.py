@@ -7,8 +7,6 @@ key_name = "test_key_{0}".format(random.randint(1, 1e6))
 
 url = "http://127.0.0.1:8000"
 
-print(url)
-
 def test_register_user():
     endpoint = "/api/register/"
     data = {

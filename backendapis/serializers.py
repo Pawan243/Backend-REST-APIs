@@ -48,7 +48,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         password = attrs.get("password")
 
         user = User.objects.filter(username=username, password=password)
-        print(user, username, password)
         if len(user) == 0:
             superuser = authenticate(username=username, password=password)
             if superuser is None:

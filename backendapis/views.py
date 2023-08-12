@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -18,6 +19,9 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from rest_framework.exceptions import NotFound
+
+def home(request):
+    return HttpResponse('Welcome to CRUD project using Django REST Framework.')
 
 
 class UserRegistrationView(APIView):
@@ -99,7 +103,6 @@ class UserRegistrationView(APIView):
                     
                 error_message = "Please provide all required fields listed here: "
                 missing_fields = ', '.join(serializer.errors.keys())
-                print('missing fieldsssssssssss', missing_fields)
                 error_message += missing_fields + "."
                 error_response = {
                     "status": "error",
@@ -109,7 +112,6 @@ class UserRegistrationView(APIView):
                 return Response(error_response, status=status.HTTP_400_BAD_REQUEST)
             
         except Exception as ex:
-            print(ex)
             error_response = {
                 "status": "error",
                 "code": "INTERNAL_SERVER_ERROR",
@@ -138,7 +140,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             return Response(formatted_response, status=status.HTTP_200_OK)
         except AuthenticationFailed as e:
             error_code = e.detail.get("error_code", None)
-            print('error codes', error_code)
             if error_code == "MISSING_FIELDS":
                 error_message = "Missing fields. Please provide both username and password."
             elif error_code == 'INVALID_CREDENTIALS':
