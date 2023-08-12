@@ -1,4 +1,4 @@
-# Backend CRUD Operations(REST APIs)
+# Backend CRUD Operations(Django REST APIs)
 
 Welcome to our state-of-the-art CRUD (Create, Read, Update, Delete) Application! This README will walk you through the ins and outs of our powerful backend REST APIs designed to provide seamless data management and user interaction.
 
