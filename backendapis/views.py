@@ -21,7 +21,7 @@ from rest_framework import generics
 from rest_framework.exceptions import NotFound
 
 def home(request):
-    return HttpResponse('Welcome to CRUD project using Django REST Framework.')
+    return HttpResponse('Welcome to CRUD project using Django REST Framework. To test the apis, Please follow README file instructions!')
 
 
 class UserRegistrationView(APIView):
@@ -242,7 +242,6 @@ class KeyValueDetailView(generics.RetrieveUpdateDestroyAPIView):
                 "error_code": "KEY_NOT_FOUND",
                 "message": "The provided key does not exist in the database."
             }
-            # return Response(response_data, status=status.HTTP_404_NOT_FOUND)
             raise NotFound(detail=response_data)
 
     def retrieve(self, request, *args, **kwargs):
