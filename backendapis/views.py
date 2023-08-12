@@ -84,7 +84,7 @@ class UserRegistrationView(APIView):
                         "gender": user.userprofile.gender
                     }
                 }
-                return Response(response_data, status=status.HTTP_201_CREATED)
+                return Response(response_data, status=status.HTTP_200_OK)
             else:
                 error_dict = serializer.errors
                 if error_dict.get('username'):
@@ -171,6 +171,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class KeyValueListCreateView(generics.ListCreateAPIView):
     queryset = KeyValue.objects.all()
     serializer_class = KeyValueSerializer
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -221,12 +222,14 @@ class KeyValueListCreateView(generics.ListCreateAPIView):
             "message": "Data stored successfully."
         }
 
-        return Response(response_data, status=status.HTTP_201_CREATED)
+        return Response(response_data, status=status.HTTP_200_OK)
 
 class KeyValueDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = KeyValue.objects.all()
     serializer_class = KeyValueSerializer
+    permission_classes = [IsAuthenticated]
     lookup_field = 'key'  # Specify the field to use for looking up instances
+    
 
     def get_object(self):
         key = self.kwargs.get(self.lookup_field)
@@ -277,5 +280,5 @@ class KeyValueDetailView(generics.RetrieveUpdateDestroyAPIView):
             "message": "Data deleted successfully."
         }
 
-        return Response(response_data, status=status.HTTP_204_NO_CONTENT)
+        return Response(response_data, status=status.HTTP_200_OK)
 
