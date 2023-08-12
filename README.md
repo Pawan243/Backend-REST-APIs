@@ -184,7 +184,9 @@ The moment has come to wield your testing prowess. Fire up Postman and explore t
 
 
 **READ ALL Records**: GET http://localhost:8000/api/data/
+
 **READ Single record**: GET http://localhost:8000/api/data/{key}/
+
 **UPDATE**: PUT http://localhost:8000/api/data/{key}/ 
  - Fields in body(form-data):- key, value
 
