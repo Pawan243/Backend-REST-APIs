@@ -1,10 +1,6 @@
 # DPDzero-assignment
 Backend system APIs using Django REST Framework
 
-# Your Project Name
-
-Short description or tagline about your project.
-
 ## Table of Contents
 
 - [About](#about)
