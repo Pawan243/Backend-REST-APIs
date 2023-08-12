@@ -79,7 +79,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class KeyValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = KeyValue
-        fields = ('key', 'value')
+        fields = ('id', 'key', 'value')
 
 
 

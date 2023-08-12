@@ -18,7 +18,7 @@ class UserProfile(models.Model):
 
 
 class KeyValue(models.Model):
-    key = models.CharField(max_length=255)
+    key = models.CharField(max_length=255, unique=True)
     value = models.TextField()
 
     class Meta:

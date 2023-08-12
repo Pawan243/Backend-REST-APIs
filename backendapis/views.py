@@ -16,6 +16,8 @@ from rest_framework_simplejwt.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics
+from rest_framework.exceptions import NotFound
 
 
 class UserRegistrationView(APIView):
@@ -117,7 +119,6 @@ class UserRegistrationView(APIView):
 
 
 
-#Not handled INTERNAL_SERVER_ERROR(pending dev)
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
@@ -126,7 +127,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             response = super().post(request, *args, **kwargs)
             access_token = response.data.get("access_token")
             expires_in = response.data.get("expires_in")
-
             formatted_response = {
                 "status": "success",
                 "message": "Access token generated successfully.",
@@ -143,26 +143,75 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                 error_message = "Missing fields. Please provide both username and password."
             elif error_code == 'INVALID_CREDENTIALS':
                 error_message = "Invalid credentials. The provided username or password is incorrect."
+            else:
+                error_code = "INTERNAL_ERROR"
+                error_message = "Internal server error occurred. Please try again later."
+            return Response(
+                {
+                    "status": "error",
+                    "error_code": error_code,
+                    "message": error_message,
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        except Exception as e:
+            # Handle other unexpected exceptions here
+            error_code = "INTERNAL_ERROR"
+            error_message = "Internal server error occurred. Please try again later."
 
             return Response(
                 {
                     "status": "error",
-                    "message": error_message,
                     "error_code": error_code,
+                    "message": error_message,
                 },
-                status=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
-
-class KeyValueViewSet(viewsets.ModelViewSet):
+        
+class KeyValueListCreateView(generics.ListCreateAPIView):
     queryset = KeyValue.objects.all()
     serializer_class = KeyValueSerializer
-    # permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
-        serializer.save()
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
 
-    #Endpoint: POST /api/data 
+        response_data = {
+            "status": "success",
+            "data": serializer.data
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
+
     def create(self, request, *args, **kwargs):
+        key = request.data.get('key')
+        value = request.data.get('value')
+
+        if not key:
+            response_data = {
+                "status": "error",
+                "error_code": "INVALID_KEY",
+                "message": "The provided key is not valid or missing."
+            }
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+        if not value:
+            response_data = {
+                "status": "error",
+                "error_code": "INVALID_VALUE",
+                "message": "The provided value is not valid or missing."
+            }
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if key already exists
+        if KeyValue.objects.filter(key=key).exists():
+            response_data = {
+                "status": "error",
+                "error_code": "KEY_EXISTS",
+                "message": "The provided key already exists in the database. To update an existing key, use the update API."
+            }
+            return Response(response_data, status=status.HTTP_400_BAD_REQUEST)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
@@ -171,9 +220,27 @@ class KeyValueViewSet(viewsets.ModelViewSet):
             "status": "success",
             "message": "Data stored successfully."
         }
+
         return Response(response_data, status=status.HTTP_201_CREATED)
-    
-    # Endpoint: GET /api/data/{key}
+
+class KeyValueDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = KeyValue.objects.all()
+    serializer_class = KeyValueSerializer
+    lookup_field = 'key'  # Specify the field to use for looking up instances
+
+    def get_object(self):
+        key = self.kwargs.get(self.lookup_field)
+        try:
+            return KeyValue.objects.get(key=key)
+        except KeyValue.DoesNotExist:
+            response_data = {
+                "status": "error",
+                "error_code": "KEY_NOT_FOUND",
+                "message": "The provided key does not exist in the database."
+            }
+            # return Response(response_data, status=status.HTTP_404_NOT_FOUND)
+            raise NotFound(detail=response_data)
+
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
         serializer = self.get_serializer(instance)
@@ -185,34 +252,30 @@ class KeyValueViewSet(viewsets.ModelViewSet):
                 "value": instance.value
             }
         }
+
         return Response(response_data, status=status.HTTP_200_OK)
 
-    # Endpoint: PUT /api/data/{key}
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
+
         response_data = {
             "status": "success",
             "message": "Data updated successfully."
         }
+
         return Response(response_data, status=status.HTTP_200_OK)
-    
-    # Endpoint: DELETE /api/data/{key}
+
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
         self.perform_destroy(instance)
+
         response_data = {
             "status": "success",
             "message": "Data deleted successfully."
         }
+
         return Response(response_data, status=status.HTTP_204_NO_CONTENT)
-
-
-
-
-
-
 
