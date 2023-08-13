@@ -139,7 +139,8 @@ Experience the art of CRUD operations with our dynamic Python script, `tests.py`
 
 Prepare for testing in two swift steps:
 
-- **Preparation**: Before diving in, equip your environment. Open a new terminal and run:
+- **Preparation**: Ensure the Django development server is running in one terminal.
+        In another terminal, navigate to the root directory of the project and run:
    ```bash
    pip install requests
 - **Execute:**
